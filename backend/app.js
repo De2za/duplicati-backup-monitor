@@ -16,8 +16,8 @@ app.get('/api/servers', (req, res) => {
 
     res.sendFile((filePath), (err) => { 
         if (err) {
-            res.status(404); // restituisco errore in caso di fallito invio del file
-            console.log("errore invio file!");
+            console.error("errore invio file!");
+            return res.status(500).json({ error: "file non trovato" });
         } else {
             console.log("file inviato con successo");
         }
@@ -34,23 +34,25 @@ app.get('/api/servers/:id', (req, res) => {
     fs.readFile(filePath, 'utf8', (err, data) => {
 
         if (err) {
-            return res.status(404);
             console.error("errore nella lettura del file!");
+            return res.status(500).json({ error: "errore in lettura dei dati" });
         }
 
         try { // try per il parse del JSON
+
             const servers = JSON.parse(data); // parsing del file json
             const server = servers.find(server => server.id == serverId); // trovo il server con lo stesso ID di quello richiesto
 
             if(server) {
                 res.json(server); // invio il json del oggeto server con l'id corrispondente
             } else {
-                res.status(404); // restituisco errore in caso di ID non trovato
-                console.log("id non trovato!");
+                onsole.log(`ID ${serverId} non trovato!`);
+                return res.status(404).json({ error: `server con ID ${serverId} non trovato` });
             }
+
         } catch (parseError) { // in caso di errore nel parsing restituisco errore
-            console.log("errore nel parsing JSON!");
-            res.status(404);
+            console.error("errore parsing json!");
+            return res.status(500).json({ error: "errore nel parsing dei dati" });
         }
         
     });
