@@ -56,7 +56,7 @@ app.get('/api/servers/:id', (req, res) => {
         }
         
     });
-
+ 
 });
 
 app.listen(port, () => {
