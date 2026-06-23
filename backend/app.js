@@ -9,10 +9,15 @@ const port = 8080;
 app.use(cors());
 app.use(express.json());
 
-// restituisce tutti i server salvati
-app.get('/api/servers', (req, res) => {
+/* 
+    restituisce dati da visualizzare nella home page:
+    numero di server totali, online, offline
+    numero totale di backup e lo stato (ok, warning, error, unknown)
+    ultimo aggiornamento dei dati
+*/
+app.get('/api/home', (req, res) => {
 
-    const filePath = path.join(__dirname, 'data.json'); // path del file
+    const filePath = path.join(__dirname, 'data/summary.json'); // path del file
 
     res.sendFile((filePath), (err) => { 
         if (err) {
@@ -25,36 +30,66 @@ app.get('/api/servers', (req, res) => {
 
 });
 
-// restituisce un server specifico
-app.get('/api/servers/:id', (req, res) => {
+/* 
+    restituisce dati da visulaizzare nella schermata dashboard con tutti i server:
+    id del server, nome, host, url duplicati, stato e note
+*/
+app.get('/api/servers', (req, res) => {
+
+    const filePath = path.join(__dirname, 'data/servers.json'); // path del file
+
+    res.sendFile((filePath), (err) => { 
+        if (err) {
+            console.error("errore invio file!");
+            return res.status(500).json({ error: "file non trovato" });
+        } else {
+            console.log("file inviato con successo");
+        }
+    });
+
+});
+
+/* 
+    restituisce dati da visualizzare quando si clicca su un server specifico nella dashboard:
+    id del server, nome, stato,
+    lista backup con id, nome, schedule, stato, numero errori e warning e ultimo messaggio
+*/
+app.get('/api/servers/:id', async (req, res) => {
 
     const serverId = req.params.id; // id del server
-    const filePath = path.join(__dirname, 'data.json'); // path del file
 
-    fs.readFile(filePath, 'utf8', (err, data) => {
+    const filePathServer = path.join(__dirname, 'data/servers.json'); // path del file con i server
+    const filePathBackups = path.join(__dirname, 'data/duplicati-backups.normalized.json'); // path del file con i backup
 
+    let filteredBackups;
+    let serverInfo;
+
+    // leggo il file dei server per trovare quello con l'id richiesto
+    await fs.readFile(filePathServer, 'utf8', (err, data) => {
         if (err) {
             console.error("errore nella lettura del file!");
             return res.status(500).json({ error: "errore in lettura dei dati" });
+        } else {
+            const servers = JSON.parse(data);
+            serverInfo = servers.find(server => server.id === serverId);
         }
+    });
 
-        try { // try per il parse del JSON
-
-            const servers = JSON.parse(data); // parsing del file json
-            const server = servers.find(server => server.id == serverId); // trovo il server con lo stesso ID di quello richiesto
-
-            if(server) {
-                res.json(server); // invio il json del oggeto server con l'id corrispondente
-            } else {
-                onsole.log(`ID ${serverId} non trovato!`);
-                return res.status(404).json({ error: `server con ID ${serverId} non trovato` });
-            }
-
-        } catch (parseError) { // in caso di errore nel parsing restituisco errore
-            console.error("errore parsing json!");
-            return res.status(500).json({ error: "errore nel parsing dei dati" });
+    // leggo il file dei backup e filtro quelli che hanno come serverId quello richiesto
+    await fs.readFile(filePathBackups, 'utf8', (err, data) => {
+        if (err) {
+            console.error("errore nella lettura del file!");
+            return res.status(500).json({ error: "errore in lettura dei dati" });
+        } else {
+            const backups = JSON.parse(data);
+            filteredBackups = backups.filter(backup => backup.serverId == serverId);
         }
-        
+    });
+
+    // invio la risposta con le informazioni del server e la lista dei backup filtrati
+    res.json({
+        server: serverInfo,
+        backups: filteredBackups
     });
  
 });
