@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs/promises');
 
 const port = 8080;
 
@@ -61,36 +61,36 @@ app.get('/api/servers/:id', async (req, res) => {
     const filePathServer = path.join(__dirname, 'data/servers.json'); // path del file con i server
     const filePathBackups = path.join(__dirname, 'data/duplicati-backups.normalized.json'); // path del file con i backup
 
-    let filteredBackups;
+    let filteredBackups = [];
     let serverInfo;
 
-    // leggo il file dei server per trovare quello con l'id richiesto
-    await fs.readFile(filePathServer, 'utf8', (err, data) => {
-        if (err) {
-            console.error("errore nella lettura del file!");
-            return res.status(500).json({ error: "errore in lettura dei dati" });
-        } else {
-            const servers = JSON.parse(data);
-            serverInfo = servers.find(server => server.id === serverId);
-        }
-    });
+    try {
 
-    // leggo il file dei backup e filtro quelli che hanno come serverId quello richiesto
-    await fs.readFile(filePathBackups, 'utf8', (err, data) => {
-        if (err) {
-            console.error("errore nella lettura del file!");
-            return res.status(500).json({ error: "errore in lettura dei dati" });
-        } else {
-            const backups = JSON.parse(data);
-            filteredBackups = backups.filter(backup => backup.serverId == serverId);
-        }
-    });
+        // leggo il file dei server per trovare quello con l'id richiesto
+        const dataServer = await fs.readFile(filePathServer, 'utf8');
+        const servers = JSON.parse(dataServer);
+        serverInfo = servers.find(server => server.id == serverId); // cerco il server con l'id richiesto
 
-    // invio la risposta con le informazioni del server e la lista dei backup filtrati
-    res.json({
-        server: serverInfo,
-        backups: filteredBackups
-    });
+        if (!serverInfo) { // se non trovo il server con l'id richiesto
+            console.warn(`server ${serverId} non trovato`);
+            return res.status(404).json({ error: "server non trovato" });
+        }
+
+        // leggo il file dei backup e filtro quelli che hanno come serverId quello richiesto
+        const dataBackups = await fs.readFile(filePathBackups, 'utf8');
+        const backups = JSON.parse(dataBackups);
+        filteredBackups = backups.filter(backup => backup.serverId == serverId); // filtro i backup per serverId
+
+        // invio la risposta con le informazioni del server e la lista dei backup filtrati
+        return res.json({
+            server: serverInfo,
+            backups: filteredBackups
+        });
+
+    } catch (error) { // se c'è un errore nella lettura o parsing dei file
+        console.error("errore nella lettura o parsing dei file!");
+        return res.status(500).json({ error: "errore nella lettura o parsing dei dati" });
+    }
  
 });
 
