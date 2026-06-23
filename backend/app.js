@@ -52,7 +52,7 @@ app.get('/api/servers', (req, res) => {
 /* 
     restituisce dati da visualizzare quando si clicca su un server specifico nella dashboard:
     id del server, nome, stato,
-    lista backup con id, nome, schedule, stato, numero errori e warning e ultimo messaggio
+    lista backup con id, nome, schedule, stato, numero errori, numero warning e ultimo messaggio
 */
 app.get('/api/servers/:id', async (req, res) => {
 
