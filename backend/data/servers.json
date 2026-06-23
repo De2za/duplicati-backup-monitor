@@ -22,5 +22,29 @@
     "duplicatiUrl": "http://srv-legacy-01:8200",
     "status": "OFFLINE",
     "note": "Server fittizio non raggiungibile"
+  },
+  {
+    "id": 4,
+    "name": "Server Sviluppo",
+    "host": "srv-dev-02",
+    "duplicatiUrl": "http://srv-dev-02:8200",
+    "status": "ONLINE",
+    "note": "Server di stage per i test degli sviluppatori"
+  },
+  {
+    "id": 5,
+    "name": "Backup Storage Esterno",
+    "host": "nas-backup-01",
+    "duplicatiUrl": "http://nas-backup-01:8200",
+    "status": "ONLINE",
+    "note": "NAS di rete dedicato all'archiviazione storica"
+  },
+  {
+    "id": 6,
+    "name": "Server Sede Secondaria",
+    "host": "srv-branch-05",
+    "duplicatiUrl": "http://srv-branch-05:8200",
+    "status": "OFFLINE",
+    "note": "Server della filiale momentaneamente disconnesso per manutenzione"
   }
 ]

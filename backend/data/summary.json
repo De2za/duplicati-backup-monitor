@@ -1,11 +1,11 @@
 {
-  "totalServers": 3,
-  "onlineServers": 2,
-  "offlineServers": 1,
-  "totalBackups": 3,
-  "ok": 1,
-  "warning": 1,
-  "error": 1,
+  "totalServers": 6,
+  "onlineServers": 4,
+  "offlineServers": 2,
+  "totalBackups": 14,
+  "ok": 9,
+  "warning": 3,
+  "error": 2,
   "unknown": 0,
-  "lastUpdate": "2026-06-11T09:00:00"
+  "lastUpdate": "2026-06-23T15:10:00"
 }
