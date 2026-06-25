@@ -1,15 +1,16 @@
 <div class="bg-blu-scuro min-h-screen">
 
   <div class="w-full bg-crema px-8 py-6">
-    <button
-      routerLink="/dashboard"
-      class="mb-3 inline-flex items-center gap-2 text-blu-scuro font-montserrat font-semibold hover:underline"
-    >
-      <span class="text-2xl leading-none">&larr;</span> Torna alla dashboard
-    </button>
     <h1 class="text-5xl font-anton font-bold text-blu-scuro">
       LISTA BACKUP:
     </h1>
+    <button
+      routerLink="/dashboard"
+      class="group mt-3 inline-flex items-center gap-2 text-blu-scuro font-montserrat font-semibold"
+    >
+      <span class="text-2xl leading-none">&larr;</span>
+      <span class="group-hover:underline">Torna alla dashboard</span>
+    </button>
   </div>
 
 
@@ -69,7 +70,7 @@
 
         <div
           *ngIf="isExpanded(backup.id)"
-          class="w-full bg-bianco-caldo p-8 border-l-4 border-r-4 border-b-4"
+          class="w-full bg-panna p-8 border-l-4 border-r-4 border-b-4"
           [ngClass]="getStatusColor(backup.status)"
         >
           <div class="space-y-4 text-marrone font-montserrat">

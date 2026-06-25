@@ -1,8 +1,8 @@
 <div class="min-h-screen bg-gradient-to-b from-blu-scuro to-blu-gradient">
 
   <!-- NAVBAR -->
-  <nav class="bg-crema flex items-center justify-between gap-6 pl-[25px] pr-[9px] h-[80px] flex-wrap">
-    <h1 class="text-blu-scuro font-anton text-[32px] tracking-wide whitespace-nowrap">DUPLICATI MONITOR</h1>
+  <nav class="bg-crema flex items-center justify-between gap-6 px-8 py-6 flex-wrap">
+    <h1 class="text-blu-scuro font-anton font-bold text-5xl tracking-wide whitespace-nowrap">DUPLICATI MONITOR</h1>
 
     <div class="flex flex-wrap gap-10">
       @for (item of summaryBadges; track item.key) {
@@ -37,6 +37,11 @@
 
       </div>
     }
+  </div>
+
+  <!-- LOGO im group -->
+  <div class="fixed bottom-4 right-6 bg-white/90 rounded-xl p-2 shadow-lg">
+    <img src="im-group-logo.png" alt="im group" class="w-28 h-auto" />
   </div>
 
 </div>
