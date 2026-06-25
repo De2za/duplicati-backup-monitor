@@ -1,0 +1,116 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+
+<div class="bg-blu-scuro min-h-screen">
+  
+  <div class="w-full bg-crema px-8 py-6">
+    <h1 class="text-5xl font-anton font-bold text-blu-scuro">
+      LISTA BACKUP:
+    </h1>
+  </div>
+
+  
+  <div class="p-8">
+    
+    <div *ngIf="loading" class="text-bianco-caldo text-center mt-8">
+      Caricamento...
+    </div>
+
+    
+    <div *ngIf="error && !loading" class="text-rosso-error text-center mt-8 bg-red-100 p-4 rounded">
+      {{ error }}
+    </div>
+
+   
+    <div *ngIf="server && !loading" class="mb-12 text-bianco-caldo">
+      <h2 class="text-3xl font-anton font-bold mb-3">{{ server.name }}</h2>
+      <p class="text-sm opacity-80">Host: {{ server.host }}</p>
+      <p class="text-sm opacity-80">Status: 
+        <span [class]="server.status === 'ONLINE' ? 'text-verde-ok' : 'text-rosso-error'">
+          {{ server.status }}
+        </span>
+      </p>
+    </div>
+
+    
+    <div class="space-y-8">
+      <div 
+        *ngFor="let backup of backups" 
+        class="cursor-pointer"
+      >
+        
+        <div 
+          [ngClass]="getStatusColor(backup.status)"
+          (click)="toggle(backup.id)"
+          class="w-full border-4 p-8 transition-all duration-200 hover:opacity-80 bg-blu-scuro"
+          style="min-height: 100px; display: flex; align-items: center; justify-content: space-between;"
+        >
+          <div class="flex-1">
+            <h3 class="text-2xl font-anton font-bold text-bianco-caldo">
+              {{ backup.name }}
+            </h3>
+            <p class="text-sm text-bianco-caldo opacity-70 mt-2">
+              ID: {{ backup.id }}
+            </p>
+          </div>
+          <div class="flex items-center gap-4">
+            <span [ngClass]="getStatusBgColor(backup.status)" class="px-4 py-2 rounded text-white font-anton font-bold text-sm">
+              {{ backup.status }}
+            </span>
+            <span class="text-bianco-caldo text-3xl transition-transform duration-200" [class.rotate-180]="isExpanded(backup.id)">
+              ↓
+            </span>
+          </div>
+        </div>
+
+        
+        <div 
+          *ngIf="isExpanded(backup.id)"
+          class="w-full bg-bianco-caldo p-8 border-l-4 border-r-4 border-b-4"
+          [ngClass]="getStatusColor(backup.status)"
+        >
+          <div class="space-y-4 text-marrone">
+            <div>
+              <p class="font-anton font-bold text-sm opacity-70">SCHEDULAZIONE:</p>
+              <p class="text-base">{{ backup.schedule }}</p>
+            </div>
+
+            <div>
+              <p class="font-anton font-bold text-sm opacity-70">ULTIMO RUN:</p>
+              <p class="text-base">{{ backup.lastRunDate | date: 'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+
+            <div>
+              <p class="font-anton font-bold text-sm opacity-70">COMPLETAMENTO:</p>
+              <p class="text-base">
+                {{ backup.lastFinishDate ? (backup.lastFinishDate | date: 'dd/MM/yyyy HH:mm') : 'N/A' }}
+              </p>
+            </div>
+
+            <div>
+              <p class="font-anton font-bold text-sm opacity-70">MESSAGGIO:</p>
+              <p class="text-base italic">{{ backup.lastMessage }}</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 pt-4 border-t border-marrone">
+              <div>
+                <p class="font-anton font-bold text-sm opacity-70">WARNING:</p>
+                <p class="text-lg font-anton font-bold text-arancione-warning">{{ backup.warnings }}</p>
+              </div>
+              <div>
+                <p class="font-anton font-bold text-sm opacity-70">ERRORI:</p>
+                <p class="text-lg font-anton font-bold text-rosso-error">{{ backup.errors }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div *ngIf="backups.length === 0 && !loading" class="text-center text-bianco-caldo mt-8">
+      <p class="font-montserrat">Nessun backup trovato per questo server.</p>
+    </div>
+  </div>
+</div>
