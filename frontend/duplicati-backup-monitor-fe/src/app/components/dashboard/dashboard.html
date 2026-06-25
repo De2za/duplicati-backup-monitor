@@ -1,0 +1,47 @@
+<div class="min-h-screen bg-gradient-to-b from-blu-scuro to-blu-gradient">
+
+  <!-- NAVBAR -->
+  <nav class="bg-crema flex items-center justify-between gap-6 px-8 py-6 flex-wrap">
+    <h1 class="text-blu-scuro font-anton font-bold text-5xl tracking-wide whitespace-nowrap">DUPLICATI MONITOR</h1>
+
+    <div class="flex flex-wrap gap-10">
+      @for (item of summaryBadges; track item.key) {
+        <div class="flex items-center gap-3 px-5 rounded-[8px] w-[210px] h-[49px]" [ngClass]="item.bg">
+          <span class="text-bianco-caldo font-montserrat font-bold text-[32px] leading-none">{{ summary()[item.key] }}</span>
+          <span class="text-bianco-caldo font-montserrat text-[20px] leading-none">{{ item.label }}</span>
+        </div>
+      }
+    </div>
+  </nav>
+
+  <!-- GRIGLIA SERVER -->
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-10 gap-y-14 px-8 py-16 max-w-[1280px] mx-auto">
+    @for (server of servers(); track server.id) {
+      <div class="relative w-[280px] h-[120px] cursor-pointer transition-transform hover:-translate-y-1"
+        [routerLink]="['/server', server.id]">
+
+        <!-- Card glass -->
+        <div class="absolute inset-0 rounded-[20px] bg-white/10 border border-white/25 backdrop-blur-sm shadow-[12px_16px_24px_rgba(0,0,0,0.35)] px-4 py-3">
+          <p class="text-bianco-caldo font-montserrat font-semibold text-xl leading-tight line-clamp-2">{{ server.name }}</p>
+          <p class="text-bianco-caldo/80 font-montserrat font-normal text-base leading-tight mt-1">{{ formatId(server.id) }}</p>
+        </div>
+
+        <!-- Stato: pillola che sporge dall'angolo in basso a destra (come Figma) -->
+        @if (server.status === 'OFFLINE') {
+          <span class="absolute -bottom-[15px] -right-[31px] w-[112px] h-[50px] rounded-[20px] bg-white flex items-center justify-center">
+            <span class="text-grigio-offline font-anton text-[32px] leading-none">OFFLINE</span>
+          </span>
+        } @else {
+          <span class="absolute -bottom-[5px] -right-[9px] w-[60px] h-[22px] rounded-[20px]" [ngClass]="pillClass(server.status)"></span>
+        }
+
+      </div>
+    }
+  </div>
+
+  <!-- LOGO im group -->
+  <div class="fixed bottom-4 right-6 bg-white/90 rounded-xl p-2 shadow-lg">
+    <img src="im-group-logo.png" alt="im group" class="w-28 h-auto" />
+  </div>
+
+</div>
