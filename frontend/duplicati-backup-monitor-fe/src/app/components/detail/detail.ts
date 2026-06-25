@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { BackupService, BackupData, Server } from '../../services/backup.service';
@@ -8,6 +8,7 @@ import { BackupService, BackupData, Server } from '../../services/backup.service
   imports: [CommonModule],
   templateUrl: './detail.html',
   styleUrl: './detail.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ServerDetail implements OnInit {
   serverId: number | null = null;
@@ -19,11 +20,13 @@ export class ServerDetail implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private backupService: BackupService
+    private backupService: BackupService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.serverId = Number(this.route.snapshot.paramMap.get('id'));
+    console.log('Extracted serverId:', this.serverId);
     if (this.serverId) {
       this.loadServerAndBackups();
     }
@@ -37,13 +40,20 @@ export class ServerDetail implements OnInit {
 
     this.backupService.getServerDetail(this.serverId).subscribe({
       next: (data) => {
+        console.log('Dati ricevuti:', data);
         this.server = data.server;
         this.backups = data.backups;
         this.loading = false;
+        this.cdr.markForCheck();
+        console.log('Loading set to false');
+        console.log('Server:', this.server);
+        console.log('Backups:', this.backups);
       },
       error: (err: any) => {
+        console.log('Errore:', err);
         this.error = 'Errore caricamento dati server';
         this.loading = false;
+        this.cdr.markForCheck();
       }
     });
   }
