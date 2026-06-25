@@ -11,7 +11,6 @@ module.exports = {
         'marrone': '#47423E',
         'verde-ok': '#2D6A4F',
         'giallo-warning': '#E9C46A',
-        'arancione-warning': '#F4A261',
         'rosso-error': '#E63946',
         'grigio-offline': '#6B7280',
         'viola-unknown': '#A855F7',
