@@ -94,6 +94,66 @@ app.get('/api/servers/:id', async (req, res) => {
  
 });
 
+/*
+    restituisce i dati aggregati per la dashboard:
+    - servers: per ogni server il suo stato "peggiore" tra i backup
+      (UNKNOWN > ERROR > WARNING > OK). Se il server è OFFLINE lo stato è OFFLINE
+    - summary: conteggio complessivo dei backup dei soli server ONLINE,
+      suddivisi per stato (ok, warning, error, unknown)
+*/
+app.get('/api/dashboard', async (req, res) => {
+
+    // priorità degli stati: più alto = peggiore
+    const STATUS_PRIORITY = { OK: 1, WARNING: 2, ERROR: 3, UNKNOWN: 4 };
+
+    const filePathServers = path.join(__dirname, 'data/servers.json');
+    const filePathBackups = path.join(__dirname, 'data/duplicati-backups.normalized.json');
+
+    try {
+
+        const servers = JSON.parse(await fs.readFile(filePathServers, 'utf8'));
+        const backups = JSON.parse(await fs.readFile(filePathBackups, 'utf8'));
+
+        // stato peggiore per ogni server
+        const serversWithStatus = servers.map(server => {
+
+            // se il server non è online lo stato della card è OFFLINE
+            if (server.status !== 'ONLINE') {
+                return { id: server.id, name: server.name, status: 'OFFLINE' };
+            }
+
+            // calcolo lo stato peggiore tra i backup del server
+            const serverBackups = backups.filter(backup => backup.serverId == server.id);
+            let worstStatus = 'OK';
+            for (const backup of serverBackups) {
+                if ((STATUS_PRIORITY[backup.status] || 0) > (STATUS_PRIORITY[worstStatus] || 0)) {
+                    worstStatus = backup.status;
+                }
+            }
+
+            return { id: server.id, name: server.name, status: worstStatus };
+        });
+
+        // totali di tutti i backup (server online e offline inclusi)
+        const summary = { ok: 0, warning: 0, error: 0, unknown: 0 };
+        for (const backup of backups) {
+            switch (backup.status) {
+                case 'OK': summary.ok++; break;
+                case 'WARNING': summary.warning++; break;
+                case 'ERROR': summary.error++; break;
+                case 'UNKNOWN': summary.unknown++; break;
+            }
+        }
+
+        return res.json({ servers: serversWithStatus, summary });
+
+    } catch (error) {
+        console.error("errore nella lettura o parsing dei file!");
+        return res.status(500).json({ error: "errore nella lettura o parsing dei dati" });
+    }
+
+});
+
 app.listen(port, () => {
     console.log("inizio ascolto porta " + port);
 });
