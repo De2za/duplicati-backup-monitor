@@ -98,7 +98,7 @@ app.get('/api/servers/:id', async (req, res) => {
     restituisce i dati aggregati per la dashboard:
     - servers: per ogni server il suo stato "peggiore" tra i backup
       (UNKNOWN > ERROR > WARNING > OK). Se il server è OFFLINE lo stato è OFFLINE
-    - summary: conteggio complessivo dei backup dei soli server ONLINE,
+    - summary: conteggio complessivo di tutti i backup (server ONLINE e OFFLINE inclusi),
       suddivisi per stato (ok, warning, error, unknown)
 */
 app.get('/api/dashboard', async (req, res) => {

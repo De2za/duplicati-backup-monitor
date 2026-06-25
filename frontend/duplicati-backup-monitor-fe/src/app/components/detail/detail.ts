@@ -26,7 +26,6 @@ export class ServerDetail implements OnInit {
 
   ngOnInit(): void {
     this.serverId = Number(this.route.snapshot.paramMap.get('id'));
-    console.log('Extracted serverId:', this.serverId);
     if (this.serverId) {
       this.loadServerAndBackups();
     }
@@ -40,17 +39,13 @@ export class ServerDetail implements OnInit {
 
     this.backupService.getServerDetail(this.serverId).subscribe({
       next: (data) => {
-        console.log('Dati ricevuti:', data);
         this.server = data.server;
         this.backups = data.backups;
         this.loading = false;
         this.cdr.markForCheck();
-        console.log('Loading set to false');
-        console.log('Server:', this.server);
-        console.log('Backups:', this.backups);
       },
       error: (err: any) => {
-        console.log('Errore:', err);
+        console.error('Errore caricamento dati server:', err);
         this.error = 'Errore caricamento dati server';
         this.loading = false;
         this.cdr.markForCheck();
@@ -71,7 +66,7 @@ export class ServerDetail implements OnInit {
       case 'OK':
         return 'border-verde-ok';
       case 'WARNING':
-        return 'border-arancione-warning';
+        return 'border-giallo-warning';
       case 'ERROR':
         return 'border-rosso-error';
       case 'UNKNOWN':
@@ -86,7 +81,7 @@ export class ServerDetail implements OnInit {
       case 'OK':
         return 'bg-verde-ok';
       case 'WARNING':
-        return 'bg-arancione-warning';
+        return 'bg-giallo-warning';
       case 'ERROR':
         return 'bg-rosso-error';
       case 'UNKNOWN':

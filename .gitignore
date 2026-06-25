@@ -1,0 +1,10 @@
+# Dipendenze
+node_modules/
+
+# Output di build
+dist/
+.angular/cache/
+
+# OS / editor
+.DS_Store
+*.log
